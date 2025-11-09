@@ -9,7 +9,17 @@ router.get("/get-menuItems", authMiddleware,  async (req, res) => {
   try {
     const diet = req.query.diet;
 
-    const menuItems = await MenuItem.find({ diet });
+    let query;
+    if (diet === "Low-FODMAP2") {
+      // Return both Low-FODMAP and Low-FODMAP2
+      query = { diet: { $in: ["Low-FODMAP", "Low-FODMAP2"] } };
+    } else {
+      // Return only the specified diet
+      query = { diet };
+    }
+
+    // const menuItems = await MenuItem.find({ diet });
+    const menuItems = await MenuItem.find(query);
 
     if (menuItems.length === 0) {
       return res.status(404).json({ error: "No menu items found for this diet" });
